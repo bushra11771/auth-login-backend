@@ -61,7 +61,8 @@ const login = async (req, res) => {
     const JWTtoken = jwt.sign(
       { email: user.email, _id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '60s' }
+      
     );
 
     return res.status(200).json({
