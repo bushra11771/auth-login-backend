@@ -6,6 +6,15 @@ const Todo = require('../models/Todo');
 const User = require('../models/User');
 const EmailService = require('../email/authEmail');
 
+exports.getAllTodosWithUser = async (req, res) => {
+  try {
+    const todos = await Todo.find().populate('user', 'name email');
+    res.json(todos);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch todos' });
+  }
+};
+
 // Helper function to build query
 const buildTodoQuery = (userId, filters) => {
   const { search, completed } = filters;
@@ -48,8 +57,9 @@ exports.getTodos = async (req, res) => {
 exports.createTodo = async (req, res) => {
   try {
     const { title, description, dueDate } = req.body;
-    const userId = req.userId; // Use userId from middleware
     
+        const userId = req.user._id;
+
     // Handle file upload if exists
     const imageUrl = req.file ? req.file.path : null;
 
@@ -58,7 +68,7 @@ exports.createTodo = async (req, res) => {
       description,
       dueDate,
       imageUrl,
-      user: userId // Use 'user' field as per model
+      user: userId,
     });
 
     // Fetch user details for email

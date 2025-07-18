@@ -5,8 +5,8 @@ const connectDB = require('./config/db');
 const bodyParser = require('body-parser');
 const AuthRoutes = require('./routes/authRouter');
 const TodoRoutes = require('./routes/todoRoutes')
+const UserRoutes = require('./routes/userRoutes');
 const path = require('path');
-// Add this to your Express app configuration
 
 const app = express();
 
@@ -24,6 +24,7 @@ app.use(express.json());
 app.use('/auth', AuthRoutes);  
 // app.use('/products', ProductsRoutes);  
 app.use('/api/todos', TodoRoutes);
+app.use('/api/users/:id', UserRoutes);
 
 
 const PORT = process.env.PORT || 5000;
