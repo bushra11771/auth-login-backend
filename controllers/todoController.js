@@ -102,10 +102,11 @@ exports.createTodo = async (req, res) => {
 exports.updateTodo = async (req, res) => {
   try {
     ensureUploadsDir();
-    const { id } = req.params;
-    const { title, description, completed, dueDate, removeImage } = req.body;
+const { id } = req.params; 
+      console.log('Update request:', id, req.userId, req.body, req.file);
+const { title, description, completed, dueDate, removeImage } = req.body;
 
-    const existingTodo = await Todo.findOne({ _id: id, user: req.userId });
+const existingTodo = await Todo.findOne({ _id: id, user: req.userId });
     if (!existingTodo) {
       if (req.file) await unlinkAsync(req.file.path);
       return res.status(404).json({ message: 'Todo not found' });
