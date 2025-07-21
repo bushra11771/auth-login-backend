@@ -17,10 +17,10 @@ const signup = async (req, res) => {
     const newUser = new UserModel({
       name,
       email,
-      password: await bcrypt.hash(password, 10)
+      password: await bcrypt.hash(password, 10),
+      isActive: true
     });
     await newUser.save();
-              // sendNewTodoEmail(email,"Welcome to our team",`Hi,${name}`);
 
     return res.status(201).json({
       success: true,
@@ -32,6 +32,20 @@ const signup = async (req, res) => {
       message: 'Internal Server Error'
     });
   }
+};
+
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+  if (!user.isActive) return res.status(403).json({ error: 'Account deactivated. Contact admin.' });
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+
+  const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.json({ user, jwt: token });
 };
 
 const login = async (req, res) => {
@@ -51,6 +65,14 @@ const login = async (req, res) => {
       });
     }
 
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account is inactive. Please contact administrator.'
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(403).json({
@@ -63,10 +85,7 @@ const login = async (req, res) => {
       { email: user.email, userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
-      
     );
-    
-
 
     return res.status(200).json({
       success: true,
@@ -76,7 +95,8 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         userId: user._id,
-        role: user.role
+        role: user.role,
+        isActive: user.isActive
       }
     });
   } catch (error) {

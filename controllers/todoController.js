@@ -6,6 +6,15 @@ const Todo = require('../models/Todo');
 const User = require('../models/User');
 const EmailService = require('../email/authEmail');
 
+exports.getAllTodosWithUser = async (req, res) => {
+  try {
+    const todos = await Todo.find().populate('user', 'name email');
+    res.json(todos);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch todos' });
+  }
+};
+
 // Helper function to build query
 const buildTodoQuery = (userId, filters) => {
   const { search, completed } = filters;
@@ -48,8 +57,9 @@ exports.getTodos = async (req, res) => {
 exports.createTodo = async (req, res) => {
   try {
     const { title, description, dueDate } = req.body;
-    const userId = req.userId; // Use userId from middleware
     
+        const userId = req.user._id;
+
     // Handle file upload if exists
     const imageUrl = req.file ? req.file.path : null;
 
@@ -58,7 +68,7 @@ exports.createTodo = async (req, res) => {
       description,
       dueDate,
       imageUrl,
-      user: userId // Use 'user' field as per model
+      user: userId,
     });
 
     // Fetch user details for email
@@ -92,10 +102,11 @@ exports.createTodo = async (req, res) => {
 exports.updateTodo = async (req, res) => {
   try {
     ensureUploadsDir();
-    const { id } = req.params;
-    const { title, description, completed, dueDate, removeImage } = req.body;
+const { id } = req.params; 
+      console.log('Update request:', id, req.userId, req.body, req.file);
+const { title, description, completed, dueDate, removeImage } = req.body;
 
-    const existingTodo = await Todo.findOne({ _id: id, user: req.userId });
+const existingTodo = await Todo.findOne({ _id: id, user: req.userId });
     if (!existingTodo) {
       if (req.file) await unlinkAsync(req.file.path);
       return res.status(404).json({ message: 'Todo not found' });

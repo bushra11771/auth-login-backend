@@ -13,6 +13,14 @@ const storage = multer.diskStorage({
     cb(null, 'todo-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
+exports.updateUser = async (req, res) => {
+  const userId = req.params.id; 
+  if (!userId) return res.status(400).json({ error: 'User ID is required' });
+
+  const user = await user.findById(userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+};
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
