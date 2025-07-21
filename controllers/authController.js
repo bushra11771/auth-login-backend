@@ -59,11 +59,13 @@ const login = async (req, res) => {
     }
 
     const JWTtoken = jwt.sign(
-      { email: user.email, _id: user._id },
+      { email: user.email, userId: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: '60s' }
+      { expiresIn: '7W' }
       
     );
+    
+
 
     return res.status(200).json({
       success: true,
@@ -72,7 +74,8 @@ const login = async (req, res) => {
       user: {
         name: user.name,
         email: user.email,
-        _id: user._id
+        userId: user._id,
+        role: user.role
       }
     });
   } catch (error) {

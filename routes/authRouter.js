@@ -8,7 +8,7 @@ const router = require('express').Router();
 // router.post('/login', async (req, res) => {
 //     res.send('Login successful');
 // });
-router.post('/signUp', signupValidation, signup)
+router.post('/signup', signupValidation, signup)
 router.post('/login', loginValidation, login)
 
 
