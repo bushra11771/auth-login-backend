@@ -15,7 +15,11 @@ const TodoSchema = new mongoose.Schema({
   completed: {
     type: Boolean,
     default: false
+  }
+  ,imageUrl: {
+    type: String
   },
+
 //   tags: {
 //     type: [String],
 //     default: [],

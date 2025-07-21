@@ -1,17 +1,12 @@
-// routes/todoRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const todoController = require('../controllers/todoController');
-const verifyToken = require('../Middlewares/Auth'); // assuming Auth exports verifyToken
+const upload = require('../Middlewares/upload');
+const auth = require('../Middlewares/auth');
 
-// Protect all routes with verifyToken middleware
-router.use(verifyToken);
-
-// CRUD routes
-router.get('/', todoController.getTodos);
-router.post('/', todoController.createTodo);
-router.put('/:id', todoController.updateTodo);
-router.delete('/:id', todoController.deleteTodo);
+router.get('/', auth, todoController.getTodos);
+router.post('/', auth, upload.single('image'), todoController.createTodo);
+router.put('/:id', auth, upload.single('image'), todoController.updateTodo);
+router.delete('/:id', auth, todoController.deleteTodo);
 
 module.exports = router;

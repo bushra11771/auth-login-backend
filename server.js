@@ -6,13 +6,22 @@ const AuthRoutes = require('./routes/authRouter');
 // const ProductsRoutes = require('./routes/productsRouter');
 const TodoRoutes = require('./routes/todoRoutes')
 require('dotenv').config({path: './config/.env' });
-
-
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+// Add this to your Express app configuration
 
 const app = express();
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 connectDB();
 app.use(bodyParser.json())
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/auth', AuthRoutes);  
