@@ -35,8 +35,10 @@ const signup = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+      console.log("User login successful", user._id);
+
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const user = await user.findOne({ email });
 
   if (!user) return res.status(400).json({ error: 'Invalid credentials' });
   if (!user.isActive) return res.status(403).json({ error: 'Account deactivated. Contact admin.' });
