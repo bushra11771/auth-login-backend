@@ -20,6 +20,7 @@ const signup = async (req, res) => {
       password: await bcrypt.hash(password, 10)
     });
     await newUser.save();
+              // sendNewTodoEmail(email,"Welcome to our team",`Hi,${name}`);
 
     return res.status(201).json({
       success: true,

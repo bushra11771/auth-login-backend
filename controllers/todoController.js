@@ -1,8 +1,10 @@
-const Todo = require('../models/Todo');
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 const unlinkAsync = promisify(fs.unlink);
+const Todo = require('../models/Todo');
+const User = require('../models/User');
+const EmailService = require('../email/authEmail');
 
 // Helper function to build query
 const buildTodoQuery = (userId, filters) => {
@@ -42,40 +44,48 @@ exports.getTodos = async (req, res) => {
   }
 };
 
+
 exports.createTodo = async (req, res) => {
   try {
-    ensureUploadsDir();
     const { title, description, dueDate } = req.body;
+    const userId = req.userId; // Use userId from middleware
     
-    if (!title) {
-      if (req.file) await unlinkAsync(req.file.path);
-      return res.status(400).json({ message: 'Title is required' });
-    }
+    // Handle file upload if exists
+    const imageUrl = req.file ? req.file.path : null;
 
-    const todoData = {
+    const newTodo = await Todo.create({
       title,
       description,
       dueDate,
-      user: req.userId
-    };
+      imageUrl,
+      user: userId // Use 'user' field as per model
+    });
 
-    if (req.file) {
-      todoData.imageUrl = `/uploads/${req.file.filename}`;
-    }
-
-    const todo = new Todo(todoData);
-    await todo.save();
-
-    res.status(201).json(todo);
-  } catch (error) {
-    if (req.file) await unlinkAsync(req.file.path);
+    // Fetch user details for email
+    const user = await User.findById(userId);
     
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ message: messages.join(', ') });
+    if (user && user.email) {
+      try {
+        await EmailService.sendNewTodoEmail(
+          user.email,
+          {
+            title: newTodo.title,
+            description: newTodo.description,
+            dueDate: newTodo.dueDate,
+            imageUrl: newTodo.imageUrl ? `${req.protocol}://${req.get('host')}/${newTodo.imageUrl}` : null
+          },
+          user.name || 'User'
+        );
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+        // Continue even if email fails
+      }
     }
+
+    res.status(201).json(newTodo);
+  } catch (error) {
     console.error('Error creating todo:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ error: 'Failed to create todo' });
   }
 };
 
