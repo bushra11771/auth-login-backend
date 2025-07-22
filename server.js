@@ -130,6 +130,13 @@ app.get('/', (req, res) => {
   res.send(html);
 });
 
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow only your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // If using cookies/auth headers
+}));
+
 
 app.use('/auth', AuthRoutes);  
 // app.use('/products', ProductsRoutes);  
