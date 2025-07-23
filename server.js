@@ -19,6 +19,8 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 
 app.use(cors(corsOptions));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
