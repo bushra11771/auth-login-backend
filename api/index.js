@@ -1,4 +1,4 @@
 const serverlessExpress = require('@vendia/serverless-express');
-const app = require('../server'); // Import your express app
+const app = require('../server');
 
 module.exports = serverlessExpress({ app });
