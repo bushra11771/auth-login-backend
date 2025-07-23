@@ -6,7 +6,7 @@ const upload = require('../Middlewares/upload');
 
 
 // Get all users (already for superadmin)
-router.get('/', auth, superAdmin, userController.getAllUsers);
+router.get('/',auth, superAdmin, userController.getAllUsers);
 
 // Deactivate/Activate user
 router.patch('/:id/status', auth, superAdmin, userController.toggleUserStatus);
