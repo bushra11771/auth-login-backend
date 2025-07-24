@@ -4,7 +4,8 @@ const todoController = require('../controllers/todoController');
 const upload = require('../Middlewares/upload');
 const { auth, superAdmin } = require('../Middlewares/Auth');
 
-router.get('/', todoController.getTodos);
+router.get('/',todoController.getTodos);
+router.post('/', auth, upload.single('image'), todoController.createTodo);
 router.put('/:id', auth, upload.single('image'), todoController.updateTodo);
 router.delete('/:id', auth, todoController.deleteTodo);
 router.get('/all', auth, superAdmin, todoController.getAllTodosWithUser);

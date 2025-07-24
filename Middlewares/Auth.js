@@ -31,6 +31,8 @@ exports.superAdmin = (req, res, next) => {
     // Attach user and token to request
     req.token = token;
     req.user = user;
+    req.userId = user._id;
+
     next(); 
   } catch (error) {
     console.error('Authentication error:', error);

@@ -12,6 +12,7 @@ const os = require('os');
 const app = express();
 connectDB();
 
+
 const corsOptions = {
   origin: ['http://localhost:3000', 
  'https://login-authentication-umber.vercel.app/login'],
@@ -34,5 +35,6 @@ app.use('/api/users', UserRoutes);
 app.get('/', (req, res) => {
   res.send('Backend working on Vercel!');
 });
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-module.exports = app; 
